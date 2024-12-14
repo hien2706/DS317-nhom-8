@@ -39,11 +39,6 @@ Dữ liệu và phân tích sẽ được thực hiện trong khuôn khổ môn 
 
 ```
 .
-├── 1.merge_into_raw_data.ipynb
-├── 2.feature-engineering_hocky_namhoc_counter_fe.ipynb
-├── 3.scaling_encoding_splitting_dataset.ipynb
-├── 4.split_train_val_test.ipynb
-├── 5.modelling.ipynb
 ├── data
 │   ├── processed
 │   │   └── processed_data.zip
@@ -51,6 +46,11 @@ Dữ liệu và phân tích sẽ được thực hiện trong khuôn khổ môn 
 │       └── raw_data.zip
 ├── LICENSE
 ├── notebooks
+│   ├── 1.merge_into_raw_data.ipynb
+│   ├── 2.feature-engineering_hocky_namhoc_counter_fe.ipynb
+│   ├── 3.scaling_encoding_splitting_dataset.ipynb
+│   ├── 4.split_train_val_test.ipynb
+│   ├── 5.modelling.ipynb
 │   ├── Chuẩn bị dữ liệu
 │   │   ├── 1.chuan-bi-merge-raw-data.ipynb
 │   │   ├── 2.chuan-bi-sv_dtbhk_stchk.ipynb
@@ -61,6 +61,7 @@ Dữ liệu và phân tích sẽ được thực hiện trong khuôn khổ môn 
 │   │   ├── 2.split_train_val_test.ipynb
 │   │   └── 3.modelling.ipynb
 │   └── Khám phá dữ liệu
+│       ├── Đánh giá chất lượng dữ liệu.ipynb
 │       ├── Khám phá các thuộc tính của dataset.ipynb
 │       ├── Khám phá và đánh giá dữ liệu thô.ipynb
 │       ├── Kiểm chứng độ hiệu quả khi feature engineering thêm cột mới.ipynb
@@ -83,11 +84,11 @@ Dữ liệu và phân tích sẽ được thực hiện trong khuôn khổ môn 
 
 3. **Chạy Toàn Bộ Pipeline:**
    - Thực hiện theo thứ tự các file notebook chính:
-     1. `1.merge_into_raw_data.ipynb`
-     2. `2.feature-engineering_hocky_namhoc_counter_fe.ipynb`
-     3. `3.scaling_encoding_splitting_dataset.ipynb`
-     4. `4.split_train_val_test.ipynb`
-     5. `5.modelling.ipynb`
+     1. `notebooks/1.merge_into_raw_data.ipynb`
+     2. `notebooks/2.feature-engineering_hocky_namhoc_counter_fe.ipynb`
+     3. `notebooks/3.scaling_encoding_splitting_dataset.ipynb`
+     4. `notebooks/4.split_train_val_test.ipynb`
+     5. `notebooks/5.modelling.ipynb`
 
 ---
 
