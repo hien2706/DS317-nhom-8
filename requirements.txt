@@ -1,0 +1,5 @@
+# ...existing requirements...
+PyYAML==6.0.1
+flask-sqlalchemy
+psycopg2-binary
+python-dotenv

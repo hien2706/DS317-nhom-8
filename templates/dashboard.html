@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Dashboard</title>
+    <!-- Use the Bootstrap 5.1.3 CSS and Select2 CSS from CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <style>
+        /* Table row highlighting and other custom styles */
+        .clickable-row {
+            cursor: pointer;
+        }
+        .selected-row {
+            background-color: #e0e0e0;
+        }
+        .suggestion-section p, .explanation-section p {
+            white-space: pre-line;
+            line-height: 1.6;
+        }
+        .suggestion-highlight {
+            font-weight: 600;
+            color: #0d6efd;
+        }
+        .suggestion-section .bg-light,
+        .explanation-section .bg-light {
+            border-radius: 8px;
+            border-left: 4px solid #0d6efd;
+        }
+        .analysis-point {
+            margin-bottom: 15px;
+        }
+        .analysis-title {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+
+        /* Step indicator styles */
+        .step-container {
+            margin: 2rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .step {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            background: white;
+        }
+        .step.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #6c757d;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+        }
+        .step.active .step-number {
+            background: #0d6efd;
+        }
+        .step.completed .step-number {
+            background: #198754;
+        }
+
+        /* Info card styles */
+        .info-card {
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            background: white;
+        }
+        .info-card .card-header {
+            background: #f8f9fa;
+            border-bottom: 2px solid #0d6efd;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+        .info-card .card-body {
+            padding: 20px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .info-item {
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        .info-label {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            font-weight: 500;
+            color: #212529;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        .status-uploaded {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .table-sm {
+            font-size: 0.875rem;
+        }
+        .table-sm th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .info-section {
+            margin-bottom: 1.5rem;
+        }
+        .info-section h6 {
+            color: #495057;
+            font-weight: 600;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <!-- Title and welcome -->
+        <h2>Dashboard</h2>
+        <p>Welcome, <strong>{{ current_user.username }}</strong></p>
+        <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+
+        <hr>
+
+        <!-- Data Status Overview -->
+        <div class="row mb-4">
+            <!-- Student Info Card -->
+            <div class="col-md-6">
+                <div class="info-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Student Information Status</span>
+                        <span class="status-badge {% if student_data and student_data.gioitinh != -1 %}status-uploaded{% else %}status-pending{% endif %}">
+                            {% if student_data and student_data.gioitinh != -1 %}Uploaded{% else %}Pending{% endif %}
+                        </span>
+                    </div>
+                    {% if student_data and student_data.gioitinh != -1 %}
+                    <div class="card-body">
+                        <!-- Basic Information -->
+                        <h6 class="mb-3">Basic Information</h6>
+                        <div class="info-grid mb-4">
+                            <div class="info-item">
+                                <div class="info-label">Gender</div>
+                                <div class="info-value">{{ student_data.gioitinh }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Class</div>
+                                <div class="info-value">{{ student_data.lopsh }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Birth Year</div>
+                                <div class="info-value">{{ student_data.namsinh }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Education System</div>
+                                <div class="info-value">{{ student_data.hedt }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Faculty</div>
+                                <div class="info-value">{{ student_data.khoa }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Place of Birth</div>
+                                <div class="info-value">
+                                    <select name="noisinh" id="noisinh" class="form-select">
+                                        {% for place in places_of_birth %}
+                                        <option value="{{ place }}" {% if student_data.noisinh == place %}selected{% endif %}>{{ place }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Academic History -->
+                        <h6 class="mb-3">Academic History</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Semester</th>
+                                        <th>GPA</th>
+                                        <th>Credits</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for i in range(1, 23) %}
+                                        {% if student_data['dtbhk' ~ i] != -1 and student_data['sotchk' ~ i] != -1 %}
+                                        <tr>
+                                            <td>{{ i }}</td>
+                                            <td>{{ "%.2f"|format(student_data['dtbhk' ~ i]|float) }}</td>
+                                            <td>{{ student_data['sotchk' ~ i] }}</td>
+                                        </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Additional Information -->
+                        {% if student_data.trangthai != -1 or student_data.tinhtrang != -1 %}
+                        <h6 class="mt-4 mb-3">Additional Information</h6>
+                        <div class="info-grid">
+                            {% if student_data.trangthai != -1 %}
+                            <div class="info-item">
+                                <div class="info-label">Status</div>
+                                <div class="info-value">{{ student_data.trangthai }}</div>
+                            </div>
+                            {% endif %}
+                            {% if student_data.tinhtrang != -1 %}
+                            <div class="info-item">
+                                <div class="info-label">Condition</div>
+                                <div class="info-value">{{ student_data.tinhtrang }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Selected Course Card -->
+            <div class="col-md-6">
+                <div class="info-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Selected Course Status</span>
+                        <span class="status-badge {% if selected_course %}status-uploaded{% else %}status-pending{% endif %}">
+                            {% if selected_course %}Selected{% else %}Pending{% endif %}
+                        </span>
+                    </div>
+                    {% if selected_course %}
+                    <div class="card-body">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">Course Code</div>
+                                <div class="info-value">{{ selected_course.mamh }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Credits</div>
+                                <div class="info-value">{{ selected_course.sotc }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Semester</div>
+                                <div class="info-value">{{ selected_course.hocky }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Academic Year</div>
+                                <div class="info-value">{{ selected_course.namhoc }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Course</div>
+                                <div class="info-value">{{ selected_course.khoahoc }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Education System</div>
+                                <div class="info-value">{{ selected_course.hedt }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Faculty</div>
+                                <div class="info-value">{{ selected_course.khoa }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Step Indicators -->
+        <div class="step-container">
+            <!-- Step 1: Upload Student Info -->
+            <div class="step {% if not student_data %}active{% elif student_data %}completed{% endif %}" id="step1">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <h4 class="mb-0">Upload Student Information</h4>
+                </div>
+                <form method="POST" enctype="multipart/form-data" class="upload-form">
+                    <!-- Add hidden input to identify the form action -->
+                    <input type="hidden" name="upload_student_info" value="1">
+                    <div class="mb-3">
+                        <input type="file" name="file" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        Upload Student Info
+                    </button>
+                </form>
+            </div>
+
+            <!-- Step 2: Upload Timetable -->
+            <div class="step {% if not student_data %}disabled{% elif student_data and not timetable_data %}active{% else %}completed{% endif %}" id="step2">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <h4 class="mb-0">Upload Timetable</h4>
+                </div>
+                <form method="POST" enctype="multipart/form-data" class="upload-form">
+                    <!-- Add hidden input to identify the form action -->
+                    <input type="hidden" name="upload_timetable" value="1">
+                    <div class="mb-3">
+                        <input type="file" name="file" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        Upload Timetable
+                    </button>
+                </form>
+            </div>
+
+            <!-- Step 3: Choose Course -->
+            <div class="step {% if not timetable_data %}disabled{% else %}active{% endif %}" id="step3">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <h4 class="mb-0">Choose Course to Predict</h4>
+                </div>
+                {% if timetable_data and timetable_data|length > 0 %}
+                    <!-- Display Timetable Data -->
+                    <h4 class="mt-4">Timetable Data</h4>
+                    <div class="mb-3">
+                        <label for="searchCourse" class="form-label">Find Course:</label>
+                        <input type="text" id="searchCourse" class="form-control" placeholder="Search by text...">
+                    </div>
+                    <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    {% for col in timetable_data[0].keys() %}
+                                    <th>{{ col }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody id="timetableBody">
+                                {% for row in timetable_data %}
+                                <tr class="clickable-row" data-row='{{ row|tojson }}'>
+                                    {% for value in row.values() %}
+                                    <td>{{ value }}</td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Remove Selected Course Details section here -->
+
+                    <a href="{{ url_for('download_file', file_type='timetable') }}" class="btn btn-success">Download Timetable Data</a>
+                {% else %}
+                    <p class="text-muted">Please complete steps 1 and 2 first.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Success/Error Modal -->
+        <div class="modal fade" id="resultModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Prediction Section -->
+        <h3>Make Predictions</h3>
+        <form id="predictForm" method="POST">
+            <input type="hidden" name="action" value="predict">
+            <div class="mb-3">
+                <label for="model" class="form-label">Select Model</label>
+                <select name="model" id="model" class="form-select">
+                    {% for model in models %}
+                    <option value="{{ model }}" {% if model == selected_model_name %}selected{% endif %}>{{ model }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-success" id="previewButton" data-bs-toggle="modal" data-bs-target="#inputPreviewModal">Predict</button>
+                <button type="button" class="btn btn-info" id="suggestionButton">Get Suggestion</button>
+            </div>
+        </form>
+
+        <!-- Modal: Input Preview -->
+        <div class="modal fade" id="inputPreviewModal" tabindex="-1" aria-labelledby="inputPreviewModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="inputPreviewModalLabel">Input Data Preview</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" id="previewTable">
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamically populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="confirmPredict">OK, Predict</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Suggestion -->
+        <div class="modal fade" id="suggestionModal" tabindex="-1" aria-labelledby="suggestionModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="suggestionModalLabel">Academic Analysis & Suggestions</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="explanation-section">
+                            <h6 class="fw-bold">Detailed Analysis:</h6>
+                            <div id="explanationText" class="p-3 bg-light rounded"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- If predictions are available, display them -->
+        {% if predictions_table %}
+        <h4 class="mt-4">Prediction Results</h4>
+        <div class="table-responsive">
+            <div>
+                {{ predictions_table|safe }}
+            </div>
+            <a href="{{ url_for('download_file', file_type='predictions') }}" class="btn btn-success mt-3">Download Prediction Results</a>
+        </div>
+        {% endif %}
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} mt-4">{{ message }}</div>
+        {% endfor %}
+        {% endwith %}
+    </div>
+
+    <!-- Load JavaScript libraries at the bottom for best performance -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Main App Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Collect row elements and the modal
+            const rows         = document.querySelectorAll('.clickable-row');
+            const confirmModal = new bootstrap.Modal(document.getElementById('confirmCourseModal'));
+            let selectedRowData = {};
+
+            // Highlight and select a row, then show the confirmation modal
+            rows.forEach(row => {
+                row.addEventListener('click', function() {
+                    // Clear previous highlights
+                    rows.forEach(r => r.classList.remove('selected-row'));
+                    // Highlight this row
+                    row.classList.add('selected-row');
+
+                    // Parse the row data
+                    selectedRowData = JSON.parse(row.dataset.row || '{}');
+
+                    // Populate the modal with the chosen course info
+                    document.getElementById('confirm_mamh').textContent  = selectedRowData.mamh  || '';
+                    document.getElementById('confirm_sotc').textContent  = selectedRowData.sotc  || '';
+                    document.getElementById('confirm_hocky').textContent = selectedRowData.hocky || '';
+                    document.getElementById('confirm_namhoc').textContent = selectedRowData.namhoc || '';
+                    document.getElementById('confirm_khoahoc').textContent = selectedRowData.khoahoc || '';
+                    document.getElementById('confirm_hedt').textContent  = selectedRowData.hedt  || '';
+                    document.getElementById('confirm_khoa').textContent  = selectedRowData.khoa  || '';
+
+                    // Show the modal
+                    confirmModal.show();
+                });
+            });
+
+            // After confirmation, fill the hidden form and show it
+            document.getElementById('confirmSelection').addEventListener('click', function() {
+                confirmModal.hide();
+                const formContainer = document.getElementById('selectedRowForm');
+                formContainer.style.display = 'block';
+                const form = document.getElementById('rowDataForm');
+                for (const [key, val] of Object.entries(selectedRowData)) {
+                    const input = form.querySelector(`input[name="${key}"]`);
+                    if (input) input.value = val;
+                }
+            });
+
+            // Confirm Predict button => hide preview modal and submit
+            document.getElementById('confirmPredict').addEventListener('click', function() {
+                // Hide the input preview modal
+                const previewModal = bootstrap.Modal.getInstance(document.getElementById('inputPreviewModal'));
+                previewModal.hide();
+                // Show a loading indicator or disable buttons if needed
+                document.getElementById('predictForm').submit();
+            });
+
+            // Preview data before prediction
+            const previewButton = document.getElementById('previewButton');
+            const previewTableBody = document.querySelector('#previewTable tbody');
+            const inputPreviewModal = new bootstrap.Modal(document.getElementById('inputPreviewModal'));
+
+            previewButton.addEventListener('click', async function(e) {
+                e.preventDefault();
+                previewTableBody.innerHTML = ''; // Clear existing content
+                
+                try {
+                    const response = await fetch('/prepare_preview', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({}) // Ensure body is sent
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        alert(data.error || 'Failed to prepare preview');
+                        return;
+                    }
+
+                    // Process and display the preview data
+                    data.preview_data.forEach(item => {
+                        const row = previewTableBody.insertRow();
+                        
+                        if (item.isHeader) {
+                            // Create header rows
+                            const cell = row.insertCell(0);
+                            cell.colSpan = 2;
+                            cell.style.backgroundColor = '#f8f9fa';
+                            cell.style.fontWeight = 'bold';
+                            cell.textContent = item.feature;
+                        } else {
+                            // Create data rows
+                            const featureCell = row.insertCell(0);
+                            const valueCell = row.insertCell(1);
+                            featureCell.textContent = item.feature;
+                            valueCell.textContent = item.value;
+                        }
+                    });
+
+                    inputPreviewModal.show();
+                } catch (err) {
+                    console.error('Error preparing preview:', err);
+                    alert('Failed to prepare preview: ' + err.message);
+                }
+            });
+
+            // Disable upload button and show spinner on each upload form
+            document.querySelectorAll('.upload-form').forEach(form => {
+                form.addEventListener('submit', function() {
+                    const submitButton = this.querySelector('button[type="submit"]');
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Uploading...';
+                });
+            });
+
+            // Modal to show flash messages
+            function showResultModal(title, message, isSuccess) {
+                const modal       = new bootstrap.Modal(document.getElementById('resultModal'));
+                const modalTitle  = document.querySelector('#resultModal .modal-title');
+                const modalBody   = document.querySelector('#resultModal .modal-body');
+
+                modalTitle.textContent = title;
+                modalTitle.className   = 'modal-title ' + (isSuccess ? 'text-success' : 'text-danger');
+                modalBody.textContent  = message;
+
+                modal.show();
+            }
+
+            // Show any flashed messages in the result modal
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                    showResultModal(
+                        category === 'success' ? 'Success!' : 'Error',
+                        message,
+                        category === 'success'
+                    );
+                {% endfor %}
+            {% endwith %}
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize Select2 if needed
+            $('.select2').select2({
+                placeholder: "Search and select place of birth...",
+                allowClear: true,
+                theme: "classic"
+            });
+
+            // Example: handle place-of-birth changes
+            $('#noisinh').on('change', function () {
+                const noisinh = $(this).val();
+                fetch('/update_student_info', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ noisinh: noisinh })
+                }).then(response => {
+                    if (!response.ok) {
+                        alert('Failed to update place of birth');
+                    }
+                });
+            });
+
+            // Handle "Get Suggestion" button
+            document.getElementById('suggestionButton').addEventListener('click', async function () {
+                try {
+                    const response = await fetch('/suggestion', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                    });
+                    if (!response.ok) throw new Error('Failed to get suggestion');
+
+                    const data = await response.json();
+                    document.getElementById('explanationText').innerHTML = data.explanation.replace(/\n/g, '<br>');
+                    new bootstrap.Modal(document.getElementById('suggestionModal')).show();
+                } catch (err) {
+                    alert('Error retrieving suggestion: ' + err);
+                }
+            });
+
+            // Filter timetable rows as user types
+            const searchInput = document.getElementById('searchCourse');
+            searchInput.addEventListener('input', function() {
+                const filter = this.value.toLowerCase();
+                const rows = document.getElementById('timetableBody').getElementsByTagName('tr');
+                for (let i = 0; i < rows.length; i++) {
+                    const rowText = rows[i].textContent.toLowerCase();
+                    rows[i].style.display = rowText.includes(filter) ? '' : 'none';
+                }
+            });
+        });
+    </script>
+
+    <!-- Confirmation Modal for Course Selection -->
+    <div class="modal fade" id="confirmCourseModal" tabindex="-1" aria-labelledby="confirmCourseModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Course Selection</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to select the following course for prediction?</p>
+                    <form id="rowDataForm" method="POST">
+                        <input type="hidden" name="action" value="process_selected">
+                        <input type="hidden" name="mamh" id="confirm_mamh_input">
+                        <input type="hidden" name="sotc" id="confirm_sotc_input">
+                        <input type="hidden" name="hocky" id="confirm_hocky_input">
+                        <input type="hidden" name="namhoc" id="confirm_namhoc_input">
+                        <input type="hidden" name="khoahoc" id="confirm_khoahoc_input">
+                        <input type="hidden" name="hedt" id="confirm_hedt_input">
+                        <input type="hidden" name="khoa" id="confirm_khoa_input">
+                        <ul>
+                            <li><strong>Course Code:</strong> <span id="confirm_mamh"></span></li>
+                            <li><strong>Credits:</strong> <span id="confirm_sotc"></span></li>
+                            <li><strong>Semester:</strong> <span id="confirm_hocky"></span></li>
+                            <li><strong>Academic Year:</strong> <span id="confirm_namhoc"></span></li>
+                            <li><strong>Course:</strong> <span id="confirm_khoahoc"></span></li>
+                            <li><strong>Education System:</strong> <span id="confirm_hedt"></span></li>
+                            <li><strong>Faculty:</strong> <span id="confirm_khoa"></span></li>
+                        </ul>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmSelection">Accept</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle clickable rows in timetable
+            const rows = document.querySelectorAll('.clickable-row');
+            const confirmModal = new bootstrap.Modal(document.getElementById('confirmCourseModal'));
+            
+            rows.forEach(row => {
+                row.addEventListener('click', function() {
+                    // Remove previous selection
+                    rows.forEach(r => r.classList.remove('selected-row'));
+                    // Add selection to clicked row
+                    row.classList.add('selected-row');
+                    
+                    // Get the row data
+                    const rowData = JSON.parse(row.dataset.row);
+                    
+                    // Populate modal display and hidden inputs
+                    for (const [key, value] of Object.entries(rowData)) {
+                        const span = document.getElementById(`confirm_${key}`);
+                        const input = document.getElementById(`confirm_${key}_input`);
+                        if (span) span.textContent = value;
+                        if (input) input.value = value;
+                    }
+                    
+                    // Show the confirmation modal
+                    confirmModal.show();
+                });
+            });
+            
+            // Handle confirmation
+            document.getElementById('confirmSelection').addEventListener('click', function() {
+                document.getElementById('rowDataForm').submit();
+            });
+            
+            // ... rest of your existing JavaScript ...
+        });
+    </script>
+
+    <script>
+  // Log form submissions and responses for debugging
+  document.addEventListener('DOMContentLoaded', function() {
+    const uploadForms = document.querySelectorAll('.upload-form');
+    
+    uploadForms.forEach(form => {
+      form.addEventListener('submit', function(event) {
+        console.log(`Submitting form: ${form.name}`);
+      });
+    });
+
+    // Log AJAX responses if any
+    const ajaxRequests = ['prepare_preview', 'update_student_info', 'suggestion', 'remove_data'];
+    ajaxRequests.forEach(endpoint => {
+      // Example using Fetch API interception (requires further implementation)
+      // Placeholder for logging purposes
+    });
+  });
+
+  // Optional: Display logs in the browser console
+</script>
+</body>
+</html>
