@@ -72,6 +72,7 @@ MODELS = {
     "Linear Regression": "models/dataset1/dataset1_linear_regression_default.pkl",
     "XGBoost": "models/dataset1/dataset1_xgboost_regression_optimized.pkl",
     "Random Forest": "models/dataset1/dataset1_random_forest_regression_optimized.pkl",
+    "Ridge Regression": "models/dataset1/dataset1_ridge_regression_optimized.pkl",
 }
 
 # Load label encoders
@@ -490,15 +491,37 @@ def dashboard():
                         logger.info(f"{column}: {input_df[column].dtype}")
 
                     # Perform prediction
-                    predictions = loaded_model.predict(input_df)
-                    logger.info(f"Predictions: {predictions}")
+                    predictions = loaded_model.predict(input_df).astype(np.float64)
+                    prediction_value = predictions[0] if predictions.size == 1 else predictions.tolist()
+                    logger.info(f"Predictions: {prediction_value}")
 
-                    # Create a table of predictions for display
-                    predictions_table = pd.DataFrame(predictions, columns=['Prediction']).to_html(classes='table table-striped')
-                    logger.info("Generated predictions table.")
+                    # Retrieve selected course data
+                    selected_course = session.get('selected_course', {})
+
+                    # Combine predictions with selected course fields
+                    combined_data = selected_course.copy()
+                    combined_data['Prediction'] = prediction_value
+                    
+                    combined_data_df = pd.DataFrame([combined_data])
+                    # combined_data_df.drop(combined_data_df.columns[0], axis=1, inplace=True)
+                    combined_data_df.reset_index(drop=True, inplace=True)
+                    combined_data_df.rename(columns={
+                        'mamh': 'Course Code',
+                        'sotc': 'Credits',
+                        'hocky': 'Semester',
+                        'namhoc': 'Year',
+                        'khoahoc': 'Academic Year',
+                        'hedt': 'Education Program',
+                        'khoa': 'Faculty',
+                        'Prediction': 'Predicted Score'
+                    }, inplace=True)
+                    # Create predictions_table with course fields and prediction
+                    predictions_table = combined_data_df.to_html(classes='table table-striped', index=False, justify='center')
+
+                    logger.info("Generated predictions table with course fields.")
 
                     # Store predictions in session with proper conversion
-                    session['predictions'] = predictions.tolist() if isinstance(predictions, np.ndarray) else list(predictions)
+                    session['predictions'] = prediction_value
                     session['predictions_table'] = predictions_table
                     session['selected_model_name'] = selected_model
 
@@ -676,19 +699,17 @@ def suggestion():
 
     # Log the retrieved predictions
     logger.info(f"Retrieved predictions from session: {predictions}")
-
+    if (predictions < 0 or predictions > 10):
+        return jsonify({'error': 'Invalid predictions'}), 400
     # Format input data for Gemini
     preview_text = "Student Data Analysis:\n"
-    for key, value in input_preview.items():
+    student_data = input_preview.get('student_data', {})
+    for key, value in student_data.items():
         if key.startswith(('dtbhk', 'sotchk')) and value != -1:
             preview_text += f"{key}: {value}\n"
     print(preview_text)
-    # Convert predictions to a readable format with proper error handling
-    try:
-        predictions_str = ', '.join(map(str, predictions))
-    except Exception as e:
-        logger.error(f"Error converting predictions to string: {e}")
-        predictions_str = str(predictions)
+
+    predictions_str = str(predictions)
 
     prompt = f"""
     Phân tích kết quả dự đoán điểm môn học dựa trên dữ liệu sau:

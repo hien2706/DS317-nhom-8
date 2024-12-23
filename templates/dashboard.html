@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Dashboard</title>
-    <!-- Use the Bootstrap 5.1.3 CSS and Select2 CSS from CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+{% extends "base.html" %}
 
-    <style>
+{% block title %}Dashboard{% endblock %}
+
+{% block head %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
         /* Table row highlighting and other custom styles */
         .clickable-row {
             cursor: pointer;
@@ -143,10 +141,13 @@
             padding-bottom: 0.5rem;
             border-bottom: 2px solid #e9ecef;
         }
-    </style>
-</head>
+        .confirmation-modal .modal-dialog {
+            max-width: 650px; /* or any preferred width */
+        }
+</style>
+{% endblock %}
 
-<body>
+{% block content %}
     <div class="container mt-4">
         <!-- Title and welcome -->
         <h2>Dashboard</h2>
@@ -469,29 +470,31 @@
 
         <!-- If predictions are available, display them -->
         {% if predictions_table %}
-        <h4 class="mt-4">Prediction Results</h4>
-        <div class="table-responsive">
-            <div>
-                {{ predictions_table|safe }}
+        <div id="predictions-section">
+            <h4 class="mt-4">Prediction Results</h4>
+            <div class="table-responsive">
+                <div>
+                    {{ predictions_table|safe }}
+                </div>
+                <a href="{{ url_for('download_file', file_type='predictions') }}" class="btn btn-success mt-3">Download Prediction Results</a>
             </div>
-            <a href="{{ url_for('download_file', file_type='predictions') }}" class="btn btn-success mt-3">Download Prediction Results</a>
         </div>
         {% endif %}
 
         <!-- Flash messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
+        <!-- {% with messages = get_flashed_messages(with_categories=true) %}
         {% for category, message in messages %}
         <div class="alert alert-{{ category }} mt-4">{{ message }}</div>
         {% endfor %}
-        {% endwith %}
+        {% endwith %} -->
     </div>
+{% endblock %}
 
-    <!-- Load JavaScript libraries at the bottom for best performance -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Main App Logic -->
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+        const studentHedt = "{{ student_data.hedt }}";
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Collect row elements and the modal
@@ -509,6 +512,11 @@
 
                     // Parse the row data
                     selectedRowData = JSON.parse(row.dataset.row || '{}');
+
+                    if (selectedRowData.hedt !== studentHedt) {
+                        alert("This course's hedt is different from the student's. You cannot choose this course.");
+                        return;
+                    }
 
                     // Populate the modal with the chosen course info
                     document.getElementById('confirm_mamh').textContent  = selectedRowData.mamh  || '';
@@ -687,12 +695,12 @@
     </script>
 
     <!-- Confirmation Modal for Course Selection -->
-    <div class="modal fade" id="confirmCourseModal" tabindex="-1" aria-labelledby="confirmCourseModalLabel" aria-hidden="true">
+    <div class="modal fade confirmation-modal" id="confirmCourseModal" tabindex="-1" aria-labelledby="confirmCourseModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Confirm Course Selection</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="confirmCourseModalLabel">Confirm Course Selection</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <p>Are you sure you want to select the following course for prediction?</p>
@@ -717,50 +725,70 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" onclick="dismissConfirmModal()">Cancel</button>
                     <button type="button" class="btn btn-primary" id="confirmSelection">Accept</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Handle clickable rows in timetable
-            const rows = document.querySelectorAll('.clickable-row');
-            const confirmModal = new bootstrap.Modal(document.getElementById('confirmCourseModal'));
-            
-            rows.forEach(row => {
-                row.addEventListener('click', function() {
-                    // Remove previous selection
-                    rows.forEach(r => r.classList.remove('selected-row'));
-                    // Add selection to clicked row
-                    row.classList.add('selected-row');
-                    
-                    // Get the row data
-                    const rowData = JSON.parse(row.dataset.row);
-                    
-                    // Populate modal display and hidden inputs
-                    for (const [key, value] of Object.entries(rowData)) {
-                        const span = document.getElementById(`confirm_${key}`);
-                        const input = document.getElementById(`confirm_${key}_input`);
-                        if (span) span.textContent = value;
-                        if (input) input.value = value;
-                    }
-                    
-                    // Show the confirmation modal
-                    confirmModal.show();
-                });
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add this function to properly dismiss the modal
+        window.dismissConfirmModal = function() {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('confirmCourseModal'));
+            modal.hide();
+            // Remove any remaining backdrop
+            const backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.remove();
+            }
+            // Re-enable scrolling on the body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+        };
+
+        // Handle clickable rows in timetable
+        const rows = document.querySelectorAll('.clickable-row');
+        const confirmModal = new bootstrap.Modal(document.getElementById('confirmCourseModal'));
+        
+        rows.forEach(row => {
+            row.addEventListener('click', function() {
+                // Remove previous selection
+                rows.forEach(r => r.classList.remove('selected-row'));
+                // Add selection to clicked row
+                row.classList.add('selected-row');
+                
+                // Get the row data
+                const rowData = JSON.parse(row.dataset.row);
+                
+                if (rowData.hedt !== studentHedt) {
+                    alert("This course's hedt is different from the student's. You cannot choose this course.");
+                    return;
+                }
+
+                // Populate modal display and hidden inputs
+                for (const [key, value] of Object.entries(rowData)) {
+                    const span = document.getElementById(`confirm_${key}`);
+                    const input = document.getElementById(`confirm_${key}_input`);
+                    if (span) span.textContent = value;
+                    if (input) input.value = value;
+                }
+                
+                // Show the confirmation modal
+                confirmModal.show();
             });
-            
-            // Handle confirmation
-            document.getElementById('confirmSelection').addEventListener('click', function() {
-                document.getElementById('rowDataForm').submit();
-            });
-            
-            // ... rest of your existing JavaScript ...
         });
-    </script>
+        
+        // Handle confirmation
+        document.getElementById('confirmSelection').addEventListener('click', function() {
+            document.getElementById('rowDataForm').submit();
+        });
+        
+        // ... rest of your existing JavaScript ...
+    });
+</script>
 
     <script>
   // Log form submissions and responses for debugging
@@ -781,7 +809,87 @@
     });
   });
 
-  // Optional: Display logs in the browser console
 </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add smooth scrolling utility
+        function scrollToElement(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+
+        // Modify the confirmPredict handler to scroll to results after submission
+        document.getElementById('confirmPredict').addEventListener('click', function() {
+            const previewModal = bootstrap.Modal.getInstance(document.getElementById('inputPreviewModal'));
+            previewModal.hide();
+            document.getElementById('predictForm').submit();
+            // Add small delay to ensure content is loaded
+            setTimeout(() => {
+                scrollToElement('predictions-section');
+            }, 500);
+        });
+
+        // Auto-scroll after file uploads
+        document.querySelectorAll('.upload-form').forEach(form => {
+            form.addEventListener('submit', function() {
+                const submitButton = this.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Uploading...';
+                
+                // After upload, scroll to the next step
+                setTimeout(() => {
+                    if (this.querySelector('input[name="upload_student_info"]')) {
+                        scrollToElement('step2');
+                    } else if (this.querySelector('input[name="upload_timetable"]')) {
+                        scrollToElement('step3');
+                    }
+                }, 500);
+            });
+        });
+
+        // Scroll to course selection after confirming
+        document.getElementById('confirmSelection').addEventListener('click', function() {
+            document.getElementById('rowDataForm').submit();
+            setTimeout(() => {
+                scrollToElement('predictForm');
+            }, 500);
+        });
+
+        // Scroll to suggestion modal content when opened
+        document.getElementById('suggestionButton').addEventListener('click', async function() {
+            try {
+                const response = await fetch('/suggestion', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+                if (!response.ok) throw new Error('Failed to get suggestion');
+
+                const data = await response.json();
+                document.getElementById('explanationText').innerHTML = data.explanation.replace(/\n/g, '<br>');
+                const modal = new bootstrap.Modal(document.getElementById('suggestionModal'));
+                modal.show();
+                
+                // Scroll to the explanation text inside modal
+                setTimeout(() => {
+                    document.getElementById('explanationText').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 300);
+            } catch (err) {
+                alert('Error retrieving suggestion: ' + err);
+            }
+        });
+
+        // ...rest of your existing code...
+    });
+</script>
+{% endblock %}
 </body>
 </html>
