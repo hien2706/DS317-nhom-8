@@ -10,9 +10,9 @@ logger = logging.getLogger(__name__)
 # Optional: Load API key from environment variables
 # from dotenv import load_dotenv
 # load_dotenv()
-# secret_value_0 = os.getenv('GENIUS_API_KEY')
+secret_value_0 = os.getenv('GENIUS_API_KEY')
 
-secret_value_0 = 'AIzaSyCxXosN2agq7Gz-s80rKRo0Pnlabeuz2LQ'
+# secret_value_0 = ''
 genai.configure(api_key=secret_value_0)
 
 # Create the model
