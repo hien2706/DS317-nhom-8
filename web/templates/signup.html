@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-lg border-0">
+        <div class="card-header bg-gradient text-white text-center py-3" style="background-color: #4e73df;">
+          <h2 class="mb-0">Sign Up</h2>
+        </div>
+        <div class="card-body p-4">
+          <form method="POST" id="signupForm" novalidate>
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input type="text" id="username" name="username" class="form-control form-control-lg" required/>
+              <div class="invalid-feedback">Please choose a username.</div>
+            </div>
+            <div class="mb-3 position-relative">
+              <label for="password" class="form-label">Password</label>
+              <div class="input-group">
+                <input type="password" id="password" name="password" class="form-control form-control-lg" required/>
+                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+              <div class="invalid-feedback">Please enter a password.</div>
+            </div>
+            <div class="mb-3 position-relative">
+              <label for="confirm_password" class="form-label">Confirm Password</label>
+              <div class="input-group">
+                <input type="password" id="confirm_password" name="confirm_password" class="form-control form-control-lg" required/>
+                <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+              <div class="invalid-feedback">Please confirm your password.</div>
+            </div>
+            <div class="d-grid gap-2 mt-4">
+              <button type="submit" class="btn btn-primary btn-lg">Sign Up</button>
+            </div>
+          </form>
+          <div class="text-center mt-4">
+            <p class="mb-0">Already have an account? <a href="{{ url_for('login') }}" class="text-primary">Login here</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Password visibility toggles
+    const togglePassword = document.querySelector('#togglePassword');
+    const toggleConfirmPassword = document.querySelector('#toggleConfirmPassword');
+    const password = document.querySelector('#password');
+    const confirmPassword = document.querySelector('#confirm_password');
+
+    [togglePassword, toggleConfirmPassword].forEach((toggle, index) => {
+        toggle.addEventListener('click', function() {
+            const input = index === 0 ? password : confirmPassword;
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+            this.querySelector('i').classList.toggle('bi-eye');
+            this.querySelector('i').classList.toggle('bi-eye-slash');
+        });
+    });
+
+    // Form validation
+    const form = document.querySelector('#signupForm');
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        
+        // Check if passwords match
+        if (password.value !== confirmPassword.value) {
+            event.preventDefault();
+            confirmPassword.setCustomValidity("Passwords don't match");
+        } else {
+            confirmPassword.setCustomValidity('');
+        }
+        
+        form.classList.add('was-validated');
+    });
+});
+</script>
+{% endblock %}

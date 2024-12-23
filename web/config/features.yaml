@@ -1,0 +1,294 @@
+# Ensure this file is saved with UTF-8 encoding
+feature_order:
+  - mamh
+  - malop
+  - sotc
+  - hocky
+  - namhoc
+  - trangthai
+  - tinhtrang
+  - mamh_tt
+  - namsinh
+  - gioitinh
+  - noisinh
+  - lopsh
+  - khoa
+  - hedt
+  - khoahoc
+  - dtbhk1
+  - dtbhk2
+  - dtbhk3
+  - dtbhk4
+  - dtbhk5
+  - dtbhk6
+  - dtbhk7
+  - dtbhk8
+  - dtbhk9
+  - dtbhk10
+  - dtbhk11
+  - dtbhk12
+  - dtbhk13
+  - dtbhk14
+  - dtbhk15
+  - dtbhk16
+  - dtbhk17
+  - dtbhk18
+  - dtbhk19
+  - dtbhk20
+  - dtbhk21
+  - dtbhk22
+  - sotchk1
+  - sotchk2
+  - sotchk3
+  - sotchk4
+  - sotchk5
+  - sotchk6
+  - sotchk7
+  - sotchk8
+  - sotchk9
+  - sotchk10
+  - sotchk11
+  - sotchk12
+  - sotchk13
+  - sotchk14
+  - sotchk15
+  - sotchk16
+  - sotchk17
+  - sotchk18
+  - sotchk19
+  - sotchk20
+  - sotchk21
+  - sotchk22
+  - namhoc_monhoc
+  - hocky_monhoc
+  - gap_hocky
+  - hocky_monhoc_count
+  - namhoc_monhoc_count
+
+categorical_features:
+  - mamh
+  - malop
+  - noisinh
+  - lopsh
+  - khoa
+  - hedt
+  - mamh_tt
+  # Removed 'sotc', 'hocky', 'namhoc', 'khoahoc' if they were previously listed
+
+field_mappings:
+  gioitinh:
+    "Nam": 0
+    "Nữ": 1
+    "default": -1 # For any other values
+
+default_values:
+  student_fields:
+    gioitinh: -1
+    lopsh: ""
+    namsinh: -1
+    noisinh: "nan"
+    hedt: ""
+    khoa: ""
+    mamh: -1
+    malop: -1
+    sotc: -1
+    hocky: -1
+    namhoc: -1
+    khoahoc: -1
+    trangthai: -1
+    tinhtrang: -1
+    mamh_tt: -1
+    namhoc_monhoc: -1
+    hocky_monhoc: -1
+    gap_hocky: -1
+    hocky_monhoc_count: -1
+    namhoc_monhoc_count: -1
+    dtbhk1: -1
+    dtbhk2: -1
+    dtbhk3: -1
+    dtbhk4: -1
+    dtbhk5: -1
+    dtbhk6: -1
+    dtbhk7: -1
+    dtbhk8: -1
+    dtbhk9: -1
+    dtbhk10: -1
+    dtbhk11: -1
+    dtbhk12: -1
+    dtbhk13: -1
+    dtbhk14: -1
+    dtbhk15: -1
+    dtbhk16: -1
+    dtbhk17: -1
+    dtbhk18: -1
+    dtbhk19: -1
+    dtbhk20: -1
+    dtbhk21: -1
+    dtbhk22: -1
+    sotchk1: -1
+    sotchk2: -1
+    sotchk3: -1
+    sotchk4: -1
+    sotchk5: -1
+    sotchk6: -1
+    sotchk7: -1
+    sotchk8: -1
+    sotchk9: -1
+    sotchk10: -1
+    sotchk11: -1
+    sotchk12: -1
+    sotchk13: -1
+    sotchk14: -1
+    sotchk15: -1
+    sotchk16: -1
+    sotchk17: -1
+    sotchk18: -1
+    sotchk19: -1
+    sotchk20: -1
+    sotchk21: -1
+    sotchk22: -1
+  course_fields: -1
+  unknown_category: -1
+
+display_labels:
+  gioitinh: "Gender"
+  lopsh: "Class"
+  namsinh: "Birth Year"
+  noisinh: "Place of Birth"
+  dtbhk1: "GPA Semester 1"
+  dtbhk2: "GPA Semester 2"
+  dtbhk3: "GPA Semester 3"
+  dtbhk4: "GPA Semester 4"
+  dtbhk5: "GPA Semester 5"
+  dtbhk6: "GPA Semester 6"
+  dtbhk7: "GPA Semester 7"
+  dtbhk8: "GPA Semester 8"
+  dtbhk9: "GPA Semester 9"
+  dtbhk10: "GPA Semester 10"
+  dtbhk11: "GPA Semester 11"
+  dtbhk12: "GPA Semester 12"
+  dtbhk13: "GPA Semester 13"
+  dtbhk14: "GPA Semester 14"
+  dtbhk15: "GPA Semester 15"
+  dtbhk16: "GPA Semester 16"
+  dtbhk17: "GPA Semester 17"
+  dtbhk18: "GPA Semester 18"
+  dtbhk19: "GPA Semester 19"
+  dtbhk20: "GPA Semester 20"
+  dtbhk21: "GPA Semester 21"
+  dtbhk22: "GPA Semester 22"
+  # ...add other dtbhk labels...
+  sotchk1: "Credits Semester 1"
+  sotchk2: "Credits Semester 2"
+  sotchk3: "Credits Semester 3"
+  sotchk4: "Credits Semester 4"
+  sotchk5: "Credits Semester 5"
+  sotchk6: "Credits Semester 6"
+  sotchk7: "Credits Semester 7"
+  sotchk8: "Credits Semester 8"
+  sotchk9: "Credits Semester 9"
+  sotchk10: "Credits Semester 10"
+  sotchk11: "Credits Semester 11"
+  sotchk12: "Credits Semester 12"
+  sotchk13: "Credits Semester 13"
+  sotchk14: "Credits Semester 14"
+  sotchk15: "Credits Semester 15"
+  sotchk16: "Credits Semester 16"
+  sotchk17: "Credits Semester 17"
+  sotchk18: "Credits Semester 18"
+  sotchk19: "Credits Semester 19"
+  sotchk20: "Credits Semester 20"
+  sotchk21: "Credits Semester 21"
+  sotchk22: "Credits Semester 22"
+  # ...add other sotchk labels...
+  mamh: "Course Code"
+  malop: "Class Code"
+  sotc: "Credits"
+  hocky: "Semester"
+  namhoc: "Academic Year"
+  khoa: "Faculty"
+  hedt: "Education System"
+  khoahoc: "Course"
+
+# Whether to show fields with -1 value
+show_default_values: false
+
+places_of_birth: &places
+  - "nghệ an"
+  - "tiền giang"
+  - "bình thuận"
+  - "tây ninh"
+  - "cà mau"
+  - "khánh hòa"
+  - "đồng nai"
+  - "bình dương"
+  - "bến tre"
+  - "lâm đồng"
+  - "hồ chí minh"
+  - "trà vinh"
+  - "thanh hóa"
+  - "đồng tháp"
+  - "đắk lắk"
+  - "thừa thiên huế"
+  - "gia lai"
+  - "hà tĩnh"
+  - "minh hải"
+  - "long an"
+  - "nam định"
+  - "bình định"
+  - "phú yên"
+  - "bà rịa vũng tàu"
+  - "quảng nam"
+  - "an giang"
+  - "kiên giang"
+  - "quảng ngãi"
+  - "ninh thuận"
+  - "cần thơ"
+  - "bình phước"
+  - "kon tum"
+  - "sóc trăng"
+  - "quảng bình"
+  - "quảng trị"
+  - "vĩnh long"
+  - "ninh bình"
+  - "bắc giang"
+  - "sông bé"
+  - "vĩnh phúc"
+  - "hà nội"
+  - "bạc liêu"
+  - "hậu giang"
+  - "thái nguyên"
+  - "thái bình"
+  - "bắc ninh"
+  - "đà nẵng"
+  - "hải phòng"
+  - "bắc cạn"
+  - "quảng ninh"
+  - "hà nam"
+  - "hà nam ninh"
+  - "hải dương"
+  - "hưng yên"
+  - "hà tây"
+  - "liên bang nga"
+  - "lạng sơn"
+  - "đắk nông"
+  - "vũng tàu"
+  - "cao bằng"
+  - "hòa bình"
+  - "buôn ma thuột"
+  - "long hồ"
+  - "hải hưng"
+  - "lai châu"
+  - "phú thọ"
+  - "yên bái"
+  - "campuchia"
+  - "nghĩa sơn - nghĩa hưng - nam định"
+  - "tuyên quang"
+  - "quận thủ đức"
+  - "nha trang"
+  - "cộng hoà séc"
+  - "đà lạt"
+  - "hà sơn bình"
+  - "khác"
+# Use reference to ensure consistency
+noisinh_values: *places
