@@ -44,6 +44,8 @@ Dữ liệu và phân tích sẽ được thực hiện trong khuôn khổ môn 
 │   │   └── processed_data.zip
 │   └── raw
 │       └── raw_data.zip
+├── demo
+│   └── demo_video.txt
 ├── LICENSE
 ├── notebooks
 │   ├── 1.merge_into_raw_data.ipynb
@@ -66,7 +68,8 @@ Dữ liệu và phân tích sẽ được thực hiện trong khuôn khổ môn 
 │       ├── Khám phá và đánh giá dữ liệu thô.ipynb
 │       ├── Kiểm chứng độ hiệu quả khi feature engineering thêm cột mới.ipynb
 │       └── Trực quan hóa dữ liệu.ipynb
-└── README.md
+├── README.md
+└── web
 ```
 
 ---
@@ -89,6 +92,8 @@ Dữ liệu và phân tích sẽ được thực hiện trong khuôn khổ môn 
      3. `notebooks/3.scaling_encoding_splitting_dataset.ipynb`
      4. `notebooks/4.split_train_val_test.ipynb`
      5. `notebooks/5.modelling.ipynb`
-
+4. **Demo Ứng Dụng:**
+   - File hướng dẫn sử dụng video demo ứng dụng nằm tại `demo/demo_video.txt`.
+   - Thư mục `web/` chứa mã nguồn ứng dụng web
 ---
 
